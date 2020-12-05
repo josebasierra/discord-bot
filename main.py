@@ -7,13 +7,16 @@ from discord.ext.commands import Bot
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from helpers import get_audio
+from audioReader import *
+from voiceEngine import VoiceEngine
+from discordBot import DiscordBot
 
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("!"))
+discordBot = DiscordBot(bot)
 
 @bot.event
 async def on_ready():
@@ -39,43 +42,47 @@ async def flip(ctx):
     else:
         result = "tails"
 
-    await ctx.send(get_sentence(ctx.author, "flip", result))
+    textSentence = f"{ctx.author.mention} has asked me to `flip` : he obtained **{result}**"
+    audioSentence = f"{ctx.author.name} has asked me to flip : he obtained {result}"
+    await ctx.send(textSentence)
+    await discordBot.playTextAudio(ctx, audioSentence)
 
 
-@bot.command(description='Random choice between words')
+
+
+@bot.command(name="choose", description='Random choice between words')
 async def choose(ctx, *words: str):
     await ctx.send(get_sentence(ctx.author, "choose", random.choice(words)))
 
 
 @bot.command(name="join", description="Join current voice channel")
 async def join_voice_channel(ctx):
-    await leave_voice_channel(ctx)
-    voice = ctx.author.voice
-    if voice:
-        await voice.channel.connect()
+    await discordBot.join_voice_channel(ctx)
 
 
 @bot.command(name="leave", description="Leave voice channel if possible")
 async def leave_voice_channel(ctx):
-    for voice_client in bot.voice_clients:
-        await voice_client.disconnect()
+    await discordBot.leave_voice_channel(ctx)
 
 
-@bot.command(description="play <url> Plays youtube video")
+@bot.command(name="play", description="play <url> Plays youtube video")
 async def play(ctx, url="https://www.youtube.com/watch?v=Igq3d6XA75Y&list=PL4dX1IHww9p1D3ZzW8J2fX6q1FP5av2No"):
+    await discordBot.playYoutubeAudio(ctx, url)
 
-    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
-    if not voice.is_playing():
-        voice.play(get_audio(url))
-        voice.is_playing()
-    else:
-        await ctx.send("Already playing song")
-        return
+
+@bot.command(name="say", description="Narrates the given text")
+async def say(ctx, *sentence:str):
+    await discordBot.playTextAudio(ctx, ' '.join(sentence))
+
+    textSentence = f"{ctx.author.mention} has asked me to `say` something"
+    await ctx.send(textSentence)
+
+
 
 
 def get_sentence(author, action, result):
     print(author.mention)
-    message = f"{author.mention} has asked for `{action}` : **{result}**"
+    message = f"{author.mention} has asked me to `{action}` : **{result}**"
     return(message)
 
 bot.run(TOKEN)
