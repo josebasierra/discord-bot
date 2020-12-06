@@ -1,14 +1,10 @@
 import os
 import random
-import time
 
 import discord
-from discord.ext.commands import Bot
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from audioReader import *
-from voiceEngine import VoiceEngine
 from discordBot import DiscordBot
 
 
@@ -31,53 +27,66 @@ async def test(ctx):
 @bot.command(help= 'Roll random number between <min> and <max>')
 async def roll(ctx, min=0, max=100):
     result = random.randint(min,max)
-    await ctx.send(get_sentence(ctx.author, "roll", result ))
+
+    textSentence = f"{ctx.author.mention} has asked me to `roll` : he obtained **{result}**"
+    audioSentence = f"{ctx.author.name} has asked me to roll : he obtained {result}"
+    await discordBot.notify(ctx, textSentence, audioSentence)
 
 
 @bot.command(help= 'Flip coin, get heads or tails')
 async def flip(ctx):
-    print(ctx.author)
     if (random.randint(0,1)):
         result = "heads"
     else:
         result = "tails"
-
-    textSentence = f"{ctx.author.mention} has asked me to `flip` : he obtained **{result}**"
-    audioSentence = f"{ctx.author.name} has asked me to flip : he obtained {result}"
-    await ctx.send(textSentence)
-    await discordBot.playTextAudio(ctx, audioSentence)
-
-
+    
+    textSentence = f"{ctx.author.mention} has asked me to `flip` a coin : **{result}**"
+    audioSentence = f"{ctx.author.name} has asked me to flip a coin: {result}"
+    await discordBot.notify(ctx, textSentence, audioSentence)
 
 
 @bot.command(name="choose", description='Random choice between words')
 async def choose(ctx, *words: str):
-    await ctx.send(get_sentence(ctx.author, "choose", random.choice(words)))
+    result = random.choice(words)
+
+    textSentence = f"{ctx.author.mention} has asked me to `choose` between {words} : The optimum choice is **{result}**"
+    audioSentence = f"{ctx.author.name} has asked me to choose between {words} : The optimum choice is {result}"
+    await discordBot.notify(ctx, textSentence, audioSentence)
 
 
 @bot.command(name="join", description="Join current voice channel")
 async def join_voice_channel(ctx):
     await discordBot.join_voice_channel(ctx)
 
+    textSentence = f"{ctx.author.mention} has asked me to `join` his voice channel"
+    audioSentence = f"Hello brothers, how is it going?"
+    await discordBot.notify(ctx, textSentence, audioSentence)
 
+#TODO: fix
 @bot.command(name="leave", description="Leave voice channel if possible")
 async def leave_voice_channel(ctx):
+    textSentence = f"{ctx.author.mention} has asked me to `leave` the voice channel"
+    audioSentence = f"Goodbye, I'll miss ya"
+    await discordBot.notify(ctx, textSentence, audioSentence)
+
     await discordBot.leave_voice_channel(ctx)
 
 
 @bot.command(name="play", description="play <url> Plays youtube video")
 async def play(ctx, url="https://www.youtube.com/watch?v=Igq3d6XA75Y&list=PL4dX1IHww9p1D3ZzW8J2fX6q1FP5av2No"):
-    await discordBot.playYoutubeAudio(ctx, url)
+    textSentence = f"{ctx.author.mention} has asked me to `play`: {url} "
+    audioSentence = f"Reproducing video in 3,2,1"
+    await discordBot.notify(ctx, textSentence, audioSentence)
+
+    await discordBot.play_youtube_audio(ctx, url)
 
 
 @bot.command(name="say", description="Narrates the given text")
 async def say(ctx, *sentence:str):
-    await discordBot.playTextAudio(ctx, ' '.join(sentence))
+    await discordBot.play_text_audio(ctx, ' '.join(sentence))
 
     textSentence = f"{ctx.author.mention} has asked me to `say` something"
-    await ctx.send(textSentence)
-
-
+    await discordBot.send_text(ctx, textSentence)
 
 
 def get_sentence(author, action, result):
