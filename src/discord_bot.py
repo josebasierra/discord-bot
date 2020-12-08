@@ -1,12 +1,13 @@
 import discord
-from voice_engine import VoiceEngine
+from speech_generator import SpeechGenerator
 from audio_reader import get_audio_from_file, get_audio_from_url
 
 class DiscordBot:
 
     def __init__(self, bot):
         self.bot = bot
-        self.voice_engine = VoiceEngine()
+        self.speech_generator = SpeechGenerator()
+        self.voice_file_counter = 0  # it's used to know in which file save created voice
     
 
     async def leave_voice_channel(self, ctx):
@@ -17,7 +18,6 @@ class DiscordBot:
 
     #TODO: clean this shit
     async def join_voice_channel(self, ctx):
-
         user_voice = ctx.author.voice
         if(user_voice == None):
             return
@@ -35,9 +35,10 @@ class DiscordBot:
         await self.join_voice_channel(ctx)
 
         # create audio
-        default_path = './data/voice.mp3'
-        self.voice_engine.create_voice_file(text, default_path)
-        audio = get_audio_from_file(default_path)
+        audio_file = f'./data/voice{self.voice_file_counter}.mp3'
+        self.voice_file_counter = (self.voice_file_counter + 1)%2
+        self.speech_generator.create_speech(text, audio_file)
+        audio = get_audio_from_file(audio_file)
 
         self.play_audio(ctx, audio)
     
@@ -60,10 +61,14 @@ class DiscordBot:
 
 
     def play_audio(self, ctx, audio):
-        voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
-        if voice:
+        voice = self.get_current_voice_client(ctx.guild)
+        if not voice:
+            return
+
+        if (voice.is_playing()): 
             voice.stop()
-            voice.play(audio)
+
+        voice.play(audio)
 
 
     def get_current_voice_client(self, guild):

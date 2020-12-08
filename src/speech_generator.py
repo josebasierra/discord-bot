@@ -1,13 +1,13 @@
 import pyttsx3
+from audio_reader import get_audio_from_file, get_audio_from_url
 
-
-class VoiceEngine:
+class SpeechGenerator:
 
     def __init__(self, speed = 170, volume=1, voiceNumber=1):
         self.engine = pyttsx3.init()
         self.engine.setProperty('rate', speed)
         self.engine.setProperty('volume', volume)
-        self.set_voice(1)
+        self.set_voice(1) # set David voice default (it depends on windows installed voices)
     
 
     def play(self, text):
@@ -15,7 +15,7 @@ class VoiceEngine:
         self.engine.runAndWait()
 
 
-    def create_voice_file(self, text, filePath):
+    def create_speech(self, text, filePath):
         self.engine.save_to_file(text, filePath)
         self.engine.runAndWait()
 
