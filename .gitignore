@@ -1,4 +1,3 @@
-ffmpeg/
 __pycache__/
-.env
 *.mp3
+lib/
