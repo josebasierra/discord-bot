@@ -7,8 +7,8 @@ def get_audio_from_url(url):
     with YoutubeDL(YDL_OPTIONS) as ydl:
         info = ydl.extract_info(url, download=False)
     URL = info['formats'][0]['url']
-    return FFmpegPCMAudio(URL, executable="./ffmpeg/bin/ffmpeg.exe", **FFMPEG_OPTIONS)
+    return FFmpegPCMAudio(URL, executable="./lib/ffmpeg/bin/ffmpeg.exe", **FFMPEG_OPTIONS)
 
 def get_audio_from_file(file):
-    return FFmpegPCMAudio(file, executable="./ffmpeg/bin/ffmpeg.exe")
+    return FFmpegPCMAudio(file, executable="./lib/ffmpeg/bin/ffmpeg.exe")
 
