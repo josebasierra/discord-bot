@@ -1,6 +1,6 @@
 import os, sys, time
 import random
-
+import asyncio
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -17,9 +17,9 @@ discord_bot = DiscordBot(bot)
 @bot.event
 async def on_ready():
     await bot.change_presence(
-        status=discord.Status.online
+        status=discord.Status.offline
         )
-    print("Hello!")
+    print("I'm ready...")
 
 
 @bot.command()
@@ -47,13 +47,12 @@ async def shutdown(ctx):
     sys.exit("Shutdown command")
 
 
-
 @bot.command(help= 'Roll random number between <min> and <max>')
 async def roll(ctx, min=0, max=100):
     result = random.randint(min,max)
 
-    textSentence = f"{ctx.author.mention} has asked me to `roll` : he obtained **{result}**"
-    audioSentence = f"{ctx.author.name} has asked me to roll : he obtained {result}"
+    textSentence = f"{ctx.author.mention} has asked me to `roll` between {min} and {max} : he obtained **{result}**"
+    audioSentence = f"{ctx.author.name} has asked me to roll between {min} and {max} : he obtained {result}"
     await discord_bot.notify(ctx, textSentence, audioSentence)
 
 
@@ -64,8 +63,8 @@ async def flip(ctx):
     else:
         result = "tails"
     
-    textSentence = f"{ctx.author.mention} has asked me to `flip` a coin : **{result}**"
-    audioSentence = f"{ctx.author.name} has asked me to flip a coin: {result}"
+    textSentence = f"{ctx.author.mention} has asked me to `flip` a coin : he obtained **{result}**"
+    audioSentence = f"{ctx.author.name} has asked me to flip a coin : he obtained {result}"
     await discord_bot.notify(ctx, textSentence, audioSentence)
 
 
@@ -93,7 +92,7 @@ async def leave_voice_channel(ctx):
     audioSentence = f"Goodbye, I'll miss you"
     await discord_bot.notify(ctx, textSentence, audioSentence)
 
-    time.sleep(2)
+    await asyncio.sleep(2)
     await discord_bot.leave_voice_channel(ctx)
 
 
@@ -124,13 +123,15 @@ bot.run(TOKEN)
 
 
 
-
-
 # @bot.event
 # async def on_message(message):
-#     if bot.user.mentioned_in(message):
-#         print(message.content)
-#         await message.channel.send("...")
+#     if message.author.bot:
+#         return
+#     print(message)
+#     print(message.content)
+#     await message.channel.send("ye")
+#     # if bot.user.mentioned_in(message):
+
 
 
 # @bot.command()
