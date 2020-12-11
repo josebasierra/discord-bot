@@ -3,7 +3,7 @@ from audio_reader import get_audio_from_file, get_audio_from_url
 
 class SpeechGenerator:
 
-    def __init__(self, speed = 170, volume=1, voiceNumber=1):
+    def __init__(self, speed = 180, volume=1, voiceNumber=1):
         self.engine = pyttsx3.init()
         self.engine.setProperty('rate', speed)
         self.engine.setProperty('volume', volume)
