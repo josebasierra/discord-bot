@@ -9,4 +9,4 @@ Simple discord bot using discord.py that can speak and play some youtube music.
 
 Execute run.py to initialize the bot 
 
-[![discord bot](data/images/example.png)]
+![discord bot](data/images/example.png)
