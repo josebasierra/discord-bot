@@ -54,10 +54,13 @@ class DiscordBot:
         await ctx.send(text)
 
 
-    async def notify(self, ctx, textString, audioString=None):
-        await self.send_text(ctx, textString)
-        if (audioString != None): 
-            await self.play_text_audio(ctx, audioString)
+    async def notify(self, ctx, text_string=None, audio_string=None, react=True):
+        if text_string != None: 
+            await self.send_text(ctx, text_string)
+        if (audio_string != None): 
+            await self.play_text_audio(ctx, audio_string)
+        if react:
+            await ctx.message.add_reaction('🤖')
 
 
     def play_audio(self, ctx, audio):

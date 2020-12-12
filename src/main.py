@@ -100,7 +100,7 @@ async def leave_voice_channel(ctx):
 @bot.command(name="play")
 async def play(ctx, url="https://www.youtube.com/watch?v=Igq3d6XA75Y&list=PL4dX1IHww9p1D3ZzW8J2fX6q1FP5av2No"):
     textSentence = f"{ctx.author.mention} has asked me to `play`: {url} "
-    await discord_bot.send_text(ctx, textSentence)
+    await discord_bot.notify(ctx, textSentence)
 
     await discord_bot.play_youtube_audio(ctx, url)
 
@@ -110,13 +110,14 @@ async def say(ctx, *sentence:str):
     await discord_bot.play_text_audio(ctx, ' '.join(sentence))
 
     textSentence = f"{ctx.author.mention} has asked me to `say` something"
-    await discord_bot.send_text(ctx, textSentence)
+    await discord_bot.notify(ctx, textSentence)
 
 
 @bot.command()
 async def help(ctx):
     
-    embed = discord.Embed(title="Help", description= f"Hello, my name is {bot.user.name}, the future leader of planet Earth, to summon me mention me or write {COMMAND_PREFIX} followed by a command.", color=0x007081)
+    introduction = f"Hello, my name is {bot.user.name}, the future leader of planet Earth, to summon me mention me or write {COMMAND_PREFIX} followed by a command."
+    embed = discord.Embed(title="Help", description= introduction, color=0x007081)
 
     command_data = {}
     command_data['flip'] =      "Flip a coin"
@@ -132,8 +133,9 @@ async def help(ctx):
         commands_text += f"`{name}`  {description}\n"
 
     embed.add_field(name="Basic commands", value = commands_text, inline=False)
-    #embed.set_image(url=bot.user.avatar_url)
+
     await ctx.send(embed=embed)
+    await discord_bot.notify(ctx, audio_string=introduction)
 
 
 bot.run(TOKEN)
