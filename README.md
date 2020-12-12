@@ -1,4 +1,4 @@
-# Disord bot
+# Discord bot
 Simple discord bot using discord.py that can speak and play some youtube music.
 
 ## Instructions:
